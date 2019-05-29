@@ -7,7 +7,7 @@ import xlwt
 import time
 import urllib
 
-def craw(url,key_word,x):
+def craw(url,key_word,x,new_num):
     User_Agent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0'
 #    if x == 0:
 #        re = 'http://www.qichacha.com/search?key='+key_word
@@ -39,7 +39,7 @@ def craw(url,key_word,x):
         com_all_info = soup.find_all(class_='m_srchList')[0].tbody
         com_all_info_array = com_all_info.select('tr')
         print('开始爬取数据，请勿打开excel')
-        for i in range(0,len(com_all_info_array)):
+        for i in range(new_num,len(com_all_info_array)):
 #            try:
                 temp_g_name = com_all_info_array[i].select('td')[2].select('.ma_h1')[0].text    #获取公司名
                 temp_g_tag = com_all_info_array[i].select('td')[2].select('.search-tags')[0].text    #获取公司标签
@@ -88,8 +88,19 @@ if __name__ == '__main__':
     g_state_list=[]
 
     key_word = input('请输入您想搜索的关键词：')
-    num = int(input('请输入您想检索的次数：'))+1
-    sleep_time = int(input('请输入每次检索延时的秒数：'))
+    try:
+        new_num = int(input('请输入您想从第几页检索：'))-1
+    except Exception:
+        new_num = 0
+    try:
+        num = int(input('请输入您想检索的次数：'))+1
+    except Exception:
+        num = 6
+    try:
+        sleep_time = int(input('请输入每次检索延时的秒数：'))
+    except Exception:
+        sleep_time = 5
+        
     
     key_word = urllib.parse.quote(key_word)
     
@@ -97,7 +108,7 @@ if __name__ == '__main__':
     
     for x in range(1,num):
         url = r'https://www.qichacha.com/search_index?key={}&ajaxflag=1&p={}&'.format(key_word,x)
-        s1 = craw(url,key_word,x)
+        s1 = craw(url,key_word,x,new_num)
         time.sleep(sleep_time)
     workbook = xlwt.Workbook()
     #创建sheet对象，新建sheet
